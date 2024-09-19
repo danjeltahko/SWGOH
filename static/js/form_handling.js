@@ -1,11 +1,11 @@
 // form_handling.js
 
+import { createZone, createYourAttacksSection } from "./zone_creation.js";
 import {
-  createZone,
-  createUserDefense,
-  createYourAttacksSection,
-} from "./zone_creation.js";
-import { collectTeams, displayAttackRecommendations } from "./form_helpers.js";
+  collectAttackTeams,
+  collectTeams,
+  displayAttackRecommendations,
+} from "./form_helpers.js";
 
 // Configurations for teams per zone based on rank and mode
 export const configurations = {
@@ -42,13 +42,27 @@ export function updateForm() {
   const zonesContainer = document.getElementById("zonesContainer");
   zonesContainer.innerHTML = ""; // Clear previous content
 
-  // Create Zones (T1, B1, B2)
+  // Create Zones for the opponent's defense
   zonesContainer.appendChild(createZone("T1", window.zonesConfig.T1, false));
   zonesContainer.appendChild(createZone("B1", window.zonesConfig.B1, false));
   zonesContainer.appendChild(createZone("B2", window.zonesConfig.B2, false));
 
+  const userDefenseContainer = document.getElementById("userDefenseContainer");
+  userDefenseContainer.innerHTML = "";
+
+  // Create Zones player
+  userDefenseContainer.appendChild(
+    createZone("T1", window.zonesConfig.T1, true),
+  );
+  userDefenseContainer.appendChild(
+    createZone("B1", window.zonesConfig.B1, true),
+  );
+  userDefenseContainer.appendChild(
+    createZone("B2", window.zonesConfig.B2, true),
+  );
+
   // Update user's defense teams
-  createUserDefense();
+  // createUserDefense();
 
   // Create "Your Attacks" section
   createYourAttacksSection();
@@ -79,6 +93,9 @@ export function submitForm(event) {
   // Collect user's defense teams
   const userDefense = collectTeams("userDefenseContainer");
 
+  // Collect user's attack teams
+  const userAttack = collectAttackTeams();
+
   // Collect opponent's defense teams
   const opponentDefense = collectTeams("zonesContainer", true);
 
@@ -89,6 +106,7 @@ export function submitForm(event) {
     mode: mode,
     rank: rank,
     userDefense: userDefense,
+    userAttack: userAttack,
     opponentDefense: opponentDefense,
   };
 

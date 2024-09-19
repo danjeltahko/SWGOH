@@ -40,13 +40,20 @@ async def calculate(request: Request):
     mode = data.get("mode")
     rank = data.get("rank")
     user_defense = data.get("userDefense")
+    user_attack = data.get("userAttack")
     opponent_defense = data.get("opponentDefense")
 
     gac_round = {
         "opponent": opponent_defense,
         "player": user_defense,
+        "used_attack": user_attack,
     }
+    """
+    Used attack is none
+    """
     focus_zone = ["T1", "B1", "B2"]
+
+    print(gac_round)
 
     attack_recommendations = calculate_attack_teams(
         ally_code=ally_code,

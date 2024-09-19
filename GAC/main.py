@@ -178,6 +178,22 @@ def transform_data(
     # Divide the data into opponent and player data
     oppone_data = data["opponent"]
     player_data = data["player"]
+    used_attack = data["used_attack"]
+    """
+
+    'used_attack': [
+        [
+            
+            {
+                "name": name,
+                "base_id": base_id,
+                "categories": categories
+                "image": image
+            }
+        ]
+    ]
+
+    """
 
     # print(player_data)
     # print("")
@@ -192,6 +208,12 @@ def transform_data(
         for character in team["defense"]
     ]
     logger.info("Successfully transformed player defense to character IDs")
+
+    # Add the used attack to the player defense characters
+    if used_attack != []:
+        for team_list in used_attack:
+            for character in team_list:
+                player_defense_characters_with_id.append(character["base_id"])
 
     # Remove the defense characters from players available characters
     # Each character in the list contains:

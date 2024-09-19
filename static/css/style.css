@@ -27,7 +27,7 @@ h1 {
 }
 
 .sidebar {
-  width: 250px;
+  width: 270px;
   background-color: #1b1b1b;
   padding: 20px;
   box-sizing: border-box;
@@ -168,34 +168,6 @@ input[type="number"] {
   text-align: left;
 }
 
-.team {
-  position: relative;
-  margin-bottom: 15px;
-}
-
-.team-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 5px;
-}
-
-.team-header label {
-  margin-right: 10px;
-  color: #feda4a;
-}
-
-.team-header button {
-  padding: 5px 10px;
-  background-color: #feda4a;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.team-header button:hover {
-  background-color: #ffe700;
-}
-
 .characters-container {
   display: flex;
   flex-wrap: wrap;
@@ -273,39 +245,6 @@ input[type="button"] {
 input[type="submit"]:hover,
 input[type="button"]:hover {
   background-color: #ffe700;
-}
-
-/* Attack Recommendations */
-.attack-recommendation {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #333;
-  border-radius: 5px;
-}
-
-.attack-recommendation h4 {
-  margin-bottom: 5px;
-  color: #feda4a;
-  text-align: left;
-}
-
-.attack-recommendation .characters-container {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.attack-recommendation .character-image {
-  width: 50px;
-  height: 50px;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  background-color: #222;
-}
-
-.attack-recommendation p {
-  margin-top: 5px;
-  color: #fff;
 }
 
 /* Scrollbars */
@@ -409,7 +348,7 @@ input[type="button"]:hover {
 .status-toggle {
   position: relative;
   display: inline-block;
-  width: 100px;
+  width: 125px;
   height: 30px;
   margin-left: 10px;
 }
@@ -436,7 +375,7 @@ input[type="button"]:hover {
   position: absolute;
   content: "";
   height: 26px;
-  width: 46px;
+  width: 26px;
   left: 2px;
   top: 2px;
   background-color: white;
@@ -449,19 +388,19 @@ input[type="button"]:hover {
   top: 5px;
   width: 100%;
   text-align: center;
-  font-size: 12px;
+  font-size: 11px;
   color: white;
 }
 
 .status-toggle .toggle-label .active-text {
-  /* left: 0; */
+  left: 0;
   opacity: 1;
   transition: opacity 0.4s;
 }
 
 .status-toggle .toggle-label .eliminated-text {
-  /* left: 0; */
-  opacity: 1;
+  left: 0;
+  opacity: 0;
   transition: opacity 0.4s;
 }
 
@@ -470,7 +409,7 @@ input[type="button"]:hover {
 }
 
 .status-toggle input:checked + .toggle-label .toggle-inner {
-  transform: translateX(54px);
+  transform: translateX(85px);
 }
 
 .status-toggle input:checked + .toggle-label .active-text {
@@ -513,44 +452,27 @@ input[type="button"]:hover {
   }
 }
 
-/* Arrow pointing to the attack recommendation */
-.attack-recommendation {
-  display: flex;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.arrow-right {
-  width: 0;
-  height: 0;
-  border-top: 10px solid transparent;
-  border-bottom: 10px solid transparent;
-  border-left: 10px solid #333;
-  margin-right: 10px;
-}
-
-.attack-content {
-  flex-grow: 1;
-}
-
 /* Shared Button Styles */
 .button {
   background-color: #444; /* Gray color matching the toggle switch when off */
-  color: #333; /* Text color */
+  color: #fff; /* Text color */
   border: none;
-  border-radius: 5px; /* More curves for smoother appearance */
+  border-radius: 10px; /* More curves for smoother appearance */
   padding: 8px 16px; /* Adjust padding for better spacing */
   margin: 5px 0; /* Margin to separate buttons and inputs */
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
+  width: 100px;
 }
 
 .button:hover {
-  background-color: #bbb; /* Slightly darker gray on hover */
+  background-color: #feda4a; /* Slightly darker gray on hover */
+  color: black;
 }
 
 .presets-buttons {
-  margin-top: 20px; /* Add margin to create space from the "Ally Code" text */
+  margin-bottom: 10px; /* Add margin to create space from the "Ally Code" text */
+  display: inline-block;
 }
 
 .add-attack-team-button {
@@ -583,89 +505,123 @@ input[type="button"]:hover {
   outline: none;
   border-color: #888;
 }
-
-/* Style for team wrapper to display defense and attack side by side */
-.team-wrapper {
+/* --------------- Opponents Defense  ----------------*/
+.team {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
+  margin-bottom: 20px;
 }
 
+.team-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.team-header label {
+  margin-right: 10px;
+  color: #feda4a;
+}
+
+.team-content {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.team-header button {
+  padding: 5px 10px;
+  background-color: #feda4a;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.team-header button:hover {
+  background-color: #ffe700;
+}
+
+/* --------------- Attack Recommendations ----------------*/
+
+/* Style for the team wrapper to display defense and attack side by side */
+.team-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+/* Style for the defense team content */
 .team-wrapper .team-content {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
-
-.team-wrapper .attack-recommendation {
-  flex: 1;
-  margin-left: 20px;
-}
-
+/* Style for the attack recommendation */
 .attack-recommendation {
-  background-color: #f9f9f9;
+  flex: 1;
+  margin-left: 10px;
+  background-color: #333; /* Adjust as needed */
   padding: 10px;
   border-radius: 5px;
 }
-
-/* Hide the arrow since the attack team is next to the defense team */
-.attack-recommendation .arrow-right {
-  display: none;
+/* Attack Recommendations style */
+.attack-recommendation h4 {
+  margin-top: 0;
+  color: #feda4a;
+}
+.attack-recommendation .characters-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+.attack-recommendation .character-image {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  background-color: #222;
+}
+.attack-recommendation p {
+  margin: 0px;
+  color: #fff;
 }
 
-/* Style for the button */
-.add-to-attack-button {
-  background-color: #ccc;
-  color: #333;
+/* ---   Attack Used ---- */
+.attack-team {
+  padding: 10px;
+  background-color: #333;
+}
+
+/* add-attck-button*/
+
+/* Style for the delete button in attack teams */
+.delete-attack-team-button {
+  background-color: #e74c3c;
+  color: #fff;
   border: none;
   border-radius: 5px;
-  padding: 6px 12px;
-  margin-top: 10px;
+  padding: 4px 8px;
+  margin-left: auto;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
 }
 
-.add-to-attack-button:hover {
-  background-color: #bbb;
+.delete-attack-team-button:hover {
+  background-color: #c0392b;
 }
 
-/* Style for team wrapper to display defense and attack side by side */
-.team-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.team-wrapper .team-content {
-  flex: 1;
-}
-
-.team-wrapper .attack-recommendation {
-  flex: 1;
-  margin-left: 20px;
-}
-
-.attack-recommendation {
-  background-color: #f9f9f9;
+/* Adjust the attack-team styling if necessary */
+.attack-team {
+  border: 1px solid #444;
   padding: 10px;
   border-radius: 5px;
+  margin-bottom: 10px;
 }
 
-/* Hide the arrow since the attack team is next to the defense team */
-.attack-recommendation .arrow-right {
-  display: none;
-}
-
-/* Style for the button */
-.add-to-attack-button {
-  background-color: #ccc;
-  color: #333;
-  border: none;
+/* Ensure character images display correctly */
+.attack-team .character-image {
+  width: 50px;
+  height: 50px;
+  margin-right: 5px;
+  margin-bottom: 5px;
   border-radius: 5px;
-  padding: 6px 12px;
-  margin-top: 10px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.add-to-attack-button:hover {
-  background-color: #bbb;
 }

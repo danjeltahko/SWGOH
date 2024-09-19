@@ -1,8 +1,8 @@
 // zone_creation.js
 
-import { createTeamSlots } from "./character_selection.js";
+import { addCharacterInput } from "./character_selection.js";
 
-// Create a zone (used for both user's defense and opponent's defense)
+// Create a zone with a specified number of teams
 export function createZone(zoneName, numTeams, isUserDefense) {
   const zoneDiv = document.createElement("div");
   zoneDiv.classList.add("zone");
@@ -14,22 +14,62 @@ export function createZone(zoneName, numTeams, isUserDefense) {
     zoneDiv.id = `opponent_zone_${zoneName}`;
   }
 
-  const zoneHeader = document.createElement(isUserDefense ? "h4" : "h3");
+  const zoneHeader = document.createElement("h4");
+  zoneHeader.classList.add("collapsible");
   zoneHeader.textContent = `Zone ${zoneName}`;
-  zoneDiv.appendChild(zoneHeader);
 
-  for (let i = 1; i <= numTeams; i++) {
+  // Collapse arrow
+  const arrowSpan = document.createElement("span");
+  arrowSpan.classList.add("collapse-arrow");
+  arrowSpan.textContent = "▼"; // Down arrow
+  zoneHeader.appendChild(arrowSpan);
+
+  // Zone Checkbox for Opponent Defense
+  if (!isUserDefense) {
+    const zoneCheckboxContainer = document.createElement("div");
+    zoneCheckboxContainer.classList.add("zone-checkbox-container");
+
+    const zoneCheckbox = document.createElement("input");
+    zoneCheckbox.type = "checkbox";
+    zoneCheckbox.id = `zone_checkbox_${zoneName}`;
+    zoneCheckbox.checked = true; // Checked by default
+    zoneCheckbox.classList.add("zone-checkbox");
+
+    const zoneCheckboxLabel = document.createElement("label");
+    zoneCheckboxLabel.setAttribute("for", zoneCheckbox.id);
+    zoneCheckboxLabel.classList.add("zone-checkbox-label");
+    zoneCheckboxLabel.textContent = "Include Zone";
+
+    zoneCheckboxContainer.appendChild(zoneCheckbox);
+    zoneCheckboxContainer.appendChild(zoneCheckboxLabel);
+
+    zoneHeader.appendChild(zoneCheckboxContainer);
+  }
+
+  zoneHeader.addEventListener("click", function () {
+    this.classList.toggle("active");
+    const content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+      arrowSpan.textContent = "▼";
+    } else {
+      content.style.display = "block";
+      arrowSpan.textContent = "▲";
+    }
+  });
+
+  const contentDiv = document.createElement("div");
+  contentDiv.classList.add("zone-content");
+
+  for (let i = 0; i < numTeams; i++) {
     const teamDiv = document.createElement("div");
     teamDiv.classList.add("team");
 
     const teamHeader = document.createElement("div");
     teamHeader.classList.add("team-header");
+    teamHeader.textContent = `Team ${i + 1}`;
 
-    const label = document.createElement("label");
-    label.textContent = `Team ${i}:`;
-    teamHeader.appendChild(label);
-
-    // For opponent's defense, add eliminated checkbox
+    // Status Toggle for Opponent Teams
     if (!isUserDefense) {
       const statusToggle = document.createElement("div");
       statusToggle.classList.add("status-toggle");
@@ -66,13 +106,49 @@ export function createZone(zoneName, numTeams, isUserDefense) {
 
     teamDiv.appendChild(teamHeader);
 
-    // Create character slots
-    createTeamSlots(teamDiv, isUserDefense);
+    // Team Content
+    const teamContent = document.createElement("div");
+    teamContent.classList.add("team-content");
 
-    zoneDiv.appendChild(teamDiv);
+    const charactersContainer = document.createElement("div");
+    charactersContainer.classList.add("characters-container");
+
+    const numCharacters = window.mode === "5v5" ? 5 : 3;
+    for (let j = 0; j < numCharacters; j++) {
+      const slotDiv = document.createElement("div");
+      slotDiv.classList.add("character-slot");
+
+      // Add Character Button
+      const addButton = document.createElement("button");
+      addButton.type = "button";
+      addButton.classList.add("add-character-button");
+      addButton.onclick = function () {
+        addCharacterInput(slotDiv, isUserDefense);
+      };
+      addButton.textContent = "+";
+      slotDiv.appendChild(addButton);
+
+      charactersContainer.appendChild(slotDiv);
+    }
+
+    teamContent.appendChild(charactersContainer);
+    teamDiv.appendChild(teamContent);
+
+    contentDiv.appendChild(teamDiv);
   }
 
-  return zoneDiv;
+  zoneDiv.appendChild(zoneHeader);
+  zoneDiv.appendChild(contentDiv);
+
+  if (isUserDefense) {
+    const userDefenseContainer = document.getElementById(
+      "userDefenseContainer",
+    );
+    userDefenseContainer.appendChild(zoneDiv);
+  } else {
+    const zonesContainer = document.getElementById("zonesContainer");
+    zonesContainer.appendChild(zoneDiv);
+  }
 }
 
 // Create user's defense teams

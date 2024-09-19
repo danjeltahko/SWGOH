@@ -18,7 +18,6 @@ window.characterData = [];
 window.onload = function () {
   initCharacterData().then(() => {
     updateForm();
-    initEventListeners();
   });
 };
 

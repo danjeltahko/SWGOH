@@ -82,7 +82,7 @@ export function importPresets(event) {
 // Populate user's defense teams from file
 export function populateUserDefense(userDefenseData) {
   for (const zoneName in userDefenseData) {
-    const zoneDiv = document.getElementById(`zone_${zoneName}`);
+    const zoneDiv = document.getElementById(`user_zone_${zoneName}`);
     if (!zoneDiv) {
       console.warn(`Zone ${zoneName} not found in the DOM.`);
       continue;

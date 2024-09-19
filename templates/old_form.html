@@ -1,135 +1,125 @@
-<!doctype html>
-<!--
-  Grand Arena Championship Form
+<!-- form.html -->
 
-  I just want to say that all this front end "code"
-  has been written by ChatGPT. I have no interest in
-  front end development and I'm not good at it, at all.
--->
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <title>Grand Arena Championship Form</title>
+    <meta charset="UTF-8" />
+    <title>GAC Planner</title>
     <link rel="stylesheet" href="/static/css/style.css" />
+    <script type="module" src="/static/js/character_selection.js"></script>
+    <script type="module" src="/static/js/suggestions.js"></script>
+    <script type="module" src="/static/js/zone_creation.js"></script>
+    <script type="module" src="/static/js/form_helpers.js"></script>
+    <script type="module" src="/static/js/form_handling.js"></script>
+    <script type="module" src="/static/js/main.js"></script>
+    <script type="module" src="/static/js/presets.js"></script>
   </head>
   <body>
-    <div class="container">
-      <!-- Sidebar -->
-      <div id="sidebar" class="sidebar">
-        <button type="button" id="toggleSidebar" onclick="toggleSidebar()">
-          ☰
-        </button>
-        <div class="sidebar-content">
-          <!-- Presets -->
-          <div>
-            <button
-              type="button"
-              id="savePresetsButton"
-              class="button"
-              onclick="savePresets()"
-            >
-              Save Presets
-            </button>
-            <input
-              type="file"
-              id="importPresetsInput"
-              accept=".json"
-              style="display: none"
-              onchange="importPresets(event)"
-            />
-            <button
-              type="button"
-              id="importPresetsButton"
-              class="button"
-              onclick="document.getElementById('importPresetsInput').click()"
-            >
-              Import Presets
-            </button>
-          </div>
+    <div class="sidebar">
+      <h2>GAC Planner</h2>
+      <label for="allyCode">Ally Code</label>
+      <input
+        type="text"
+        id="allyCode"
+        name="allyCode"
+        placeholder="Enter Ally Code"
+      />
 
-          <!-- Ally Code Input -->
-          <div class="ally-code">
-            <label for="allyCode">Ally Code:</label>
-            <input
-              type="text"
-              id="allyCode"
-              name="allyCode"
-              placeholder="Enter your ally code"
-            />
-          </div>
+      <label for="minGear">Minimum Gear Level</label>
+      <input
+        type="number"
+        id="minGear"
+        name="minGear"
+        min="1"
+        max="13"
+        value="1"
+      />
 
-          <!-- Minimum Gear Input -->
-          <div class="minimum-gear">
-            <label for="minGear">Minimum Gear:</label>
-            <input
-              type="number"
-              id="minGear"
-              name="minGear"
-              min="1"
-              max="13"
-              value="12"
-            />
-          </div>
-
-          <!-- Rank Selection -->
-          <div class="rank-selection">
-            <label for="rank">Select Rank:</label>
-            <select id="rank" name="rank" onchange="updateForm()">
-              <option value="kyber">Kyber</option>
-              <option value="aurodium">Aurodium</option>
-              <option value="chromium">Chromium</option>
-              <option value="bronzium">Bronzium</option>
-              <option value="carbonite">Carbonite</option>
-            </select>
-          </div>
-
-          <!-- Mode Toggle -->
-          <div class="mode-toggle">
-            <label>Mode:</label>
-            <div class="toggle-switch">
-              <input
-                type="radio"
-                id="mode3v3"
-                name="mode"
-                value="3v3"
-                checked
-                onchange="changeMode('3v3')"
-              />
-              <label for="mode3v3">3v3</label>
-              <input
-                type="radio"
-                id="mode5v5"
-                name="mode"
-                value="5v5"
-                onchange="changeMode('5v5')"
-              />
-              <label for="mode5v5">5v5</label>
-              <span class="toggle"></span>
-            </div>
-          </div>
-
-          <!-- User's Defense Teams -->
-          <h3>Your Defense Teams</h3>
-          <div id="userDefenseContainer"></div>
-
-          <!-- Your Attacks Section -->
-          <h3>Your Attacks</h3>
-          <div id="yourAttacksContainer"></div>
-        </div>
+      <label for="mode">Mode</label>
+      <div class="toggle-switch">
+        <input
+          type="checkbox"
+          id="modeToggle"
+          name="mode"
+          checked
+          onchange="changeMode(this)"
+        />
+        <label class="slider" for="modeToggle"></label>
       </div>
 
-      <!-- Main Content -->
-      <div class="main-content">
-        <h1>Opponent's Defense Teams</h1>
-        <form id="gacForm">
-          <!-- Zones will be dynamically generated here -->
-          <div id="zonesContainer"></div>
+      <label for="rank">Rank</label>
+      <select id="rank" name="rank">
+        <option value="kyber">Kyber</option>
+        <option value="erodium">Erodium</option>
+        <option value="chromium">Chromium</option>
+        <option value="bronzeium">Bronzeium</option>
+        <option value="carbonite">Carbonite</option>
+      </select>
 
-          <input type="button" value="Calculate" onclick="submitForm(event)" />
-        </form>
+      <!-- Presets Buttons -->
+      <div class="presets-buttons">
+        <button
+          type="button"
+          id="savePresetsButton"
+          class="button"
+          onclick="savePresets()"
+        >
+          Save Presets
+        </button>
+        <input
+          type="file"
+          id="importPresetsInput"
+          accept=".json"
+          style="display: none"
+          onchange="importPresets(event)"
+        />
+        <button
+          type="button"
+          id="importPresetsButton"
+          class="button"
+          onclick="document.getElementById('importPresetsInput').click()"
+        >
+          Import Presets
+        </button>
+      </div>
+
+      <form id="gacForm" onsubmit="submitForm(event)">
+        <input type="submit" value="Calculate" class="button" />
+      </form>
+    </div>
+
+    <div class="main-content">
+      <!-- User Defense Container -->
+      <div id="userDefenseContainer" class="teams-container">
+        <h3>Your Defense Teams</h3>
+        <!-- User defense teams will be added here -->
+      </div>
+
+      <!-- Opponent's Defense Zones -->
+      <div id="zonesContainer">
+        <!-- Zones will be added here -->
+      </div>
+
+      <!-- User Attack Teams -->
+      <div id="userAttackContainer" class="teams-container">
+        <h3>Your Attack Teams</h3>
+        <!-- Attack teams will be added here -->
       </div>
     </div>
 
-    <!-- Include JavaScript Files -->
-    <script src="/static/js/main.js" type="module"></script>
+    <script type="module">
+      import { initCharacterData } from "/static/js/suggestions.js";
+      import {
+        createZones,
+        createUserDefense,
+      } from "/static/js/zone_creation.js";
+      import { updateForm } from "/static/js/main.js";
+
+      // Initialize character data
+      initCharacterData();
+
+      // Initial form setup
+      updateForm();
+    </script>
   </body>
 </html>
