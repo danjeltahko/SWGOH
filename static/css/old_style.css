@@ -1,0 +1,671 @@
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #000;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: #feda4a;
+  margin-top: 0;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Container and Layout */
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #1b1b1b;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+  transition: width 0.3s;
+  overflow: hidden;
+}
+
+.sidebar.closed {
+  width: 50px;
+}
+
+.sidebar-content {
+  display: block;
+}
+
+.sidebar.closed .sidebar-content {
+  display: none;
+}
+
+#toggleSidebar {
+  position: absolute;
+  top: 10px;
+  right: -30px;
+  background-color: #feda4a;
+  border: none;
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.minimum-gear,
+.rank-selection,
+.mode-toggle,
+.ally-code {
+  margin-bottom: 15px;
+}
+
+/* Form Elements */
+label {
+  color: #feda4a;
+  margin-right: 10px;
+}
+
+input,
+select {
+  padding: 5px;
+  border-radius: 5px;
+  border: none;
+}
+
+input[type="number"] {
+  width: 60px;
+}
+
+/* Mode Toggle */
+.mode-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.mode-toggle label {
+  margin-right: 10px;
+  color: #feda4a;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 100px;
+  background-color: #444;
+  border-radius: 25px;
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.toggle-switch input {
+  display: none;
+}
+
+.toggle-switch label {
+  width: 50%;
+  text-align: center;
+  color: #fff;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.toggle-switch .toggle {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 46px;
+  height: 26px;
+  background-color: #feda4a;
+  border-radius: 23px;
+  transition: left 0.3s;
+}
+
+#mode5v5:checked ~ .toggle {
+  left: 52px;
+}
+
+#mode3v3:checked + label {
+  color: #000;
+}
+
+#mode5v5:checked + label {
+  color: #000;
+}
+
+#mode3v3:checked + label + #mode5v5 + label {
+  color: #fff;
+}
+
+#mode5v5:checked + label + .toggle-switch label[for="mode3v3"] {
+  color: #fff;
+}
+
+/* Zones and Teams */
+.zone {
+  margin-bottom: 20px;
+  border: 1px solid #444;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.zone h3,
+.zone h4 {
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.team {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.team-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.team-header label {
+  margin-right: 10px;
+  color: #feda4a;
+}
+
+.team-header button {
+  padding: 5px 10px;
+  background-color: #feda4a;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.team-header button:hover {
+  background-color: #ffe700;
+}
+
+.characters-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.character-input {
+  position: relative;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.character-input input {
+  padding: 5px;
+  border-radius: 5px;
+  border: none;
+  width: 150px;
+}
+
+.character-image {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  background-color: #222;
+}
+
+/* Suggestions */
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #1b1b1b;
+  border: 1px solid #444;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background-color: #333;
+}
+
+.suggestion-item img {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.suggestion-item span {
+  color: #fff;
+}
+
+/* Buttons */
+input[type="submit"],
+input[type="button"] {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #feda4a;
+  color: #000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+input[type="submit"]:hover,
+input[type="button"]:hover {
+  background-color: #ffe700;
+}
+
+/* Attack Recommendations */
+.attack-recommendation {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #333;
+  border-radius: 5px;
+}
+
+.attack-recommendation h4 {
+  margin-bottom: 5px;
+  color: #feda4a;
+  text-align: left;
+}
+
+.attack-recommendation .characters-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.attack-recommendation .character-image {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  background-color: #222;
+}
+
+.attack-recommendation p {
+  margin-top: 5px;
+  color: #fff;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1b1b1b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #444;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    position: relative;
+  }
+
+  .sidebar.closed {
+    width: 100%;
+  }
+
+  #toggleSidebar {
+    right: 10px;
+  }
+
+  .main-content {
+    padding: 10px;
+  }
+}
+
+.add-character-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #444;
+  color: #fff;
+  font-size: 24px;
+  border: none;
+  cursor: pointer;
+}
+
+.add-character-button:hover {
+  background-color: #555;
+}
+
+.character-slot {
+  position: relative;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.character-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.delete-character {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.collapsible {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+}
+
+.collapse-arrow {
+  margin-left: auto;
+  font-size: 16px;
+}
+
+.zone-content.collapsed {
+  display: none;
+}
+
+/* Toggle Switch for Opponent Team Status */
+.status-toggle {
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  height: 30px;
+  margin-left: 10px;
+}
+
+.status-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.status-toggle .toggle-label {
+  position: absolute;
+  cursor: pointer;
+  background-color: #2ecc71; /* Green for Active */
+  border-radius: 30px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: background-color 0.4s;
+}
+
+.status-toggle .toggle-label .toggle-inner {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 46px;
+  left: 2px;
+  top: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.4s;
+}
+
+.status-toggle .toggle-label .toggle-text {
+  position: absolute;
+  top: 5px;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  color: white;
+}
+
+.status-toggle .toggle-label .active-text {
+  /* left: 0; */
+  opacity: 1;
+  transition: opacity 0.4s;
+}
+
+.status-toggle .toggle-label .eliminated-text {
+  /* left: 0; */
+  opacity: 1;
+  transition: opacity 0.4s;
+}
+
+.status-toggle input:checked + .toggle-label {
+  background-color: #e74c3c; /* Red for Eliminated */
+}
+
+.status-toggle input:checked + .toggle-label .toggle-inner {
+  transform: translateX(54px);
+}
+
+.status-toggle input:checked + .toggle-label .active-text {
+  opacity: 0;
+}
+
+.status-toggle input:checked + .toggle-label .eliminated-text {
+  opacity: 1;
+}
+
+/* Loading Indicator */
+.loading-indicator {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: #333;
+  z-index: 1000;
+}
+
+.loading-indicator::after {
+  content: "";
+  display: inline-block;
+  margin-left: 10px;
+  width: 24px;
+  height: 24px;
+  border: 4px solid #999;
+  border-top: 4px solid #333;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Arrow pointing to the attack recommendation */
+.attack-recommendation {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.arrow-right {
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid #333;
+  margin-right: 10px;
+}
+
+.attack-content {
+  flex-grow: 1;
+}
+
+/* Shared Button Styles */
+.button {
+  background-color: #444; /* Gray color matching the toggle switch when off */
+  color: #333; /* Text color */
+  border: none;
+  border-radius: 5px; /* More curves for smoother appearance */
+  padding: 8px 16px; /* Adjust padding for better spacing */
+  margin: 5px 0; /* Margin to separate buttons and inputs */
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.button:hover {
+  background-color: #bbb; /* Slightly darker gray on hover */
+}
+
+.presets-buttons {
+  margin-top: 20px; /* Add margin to create space from the "Ally Code" text */
+}
+
+.add-attack-team-button {
+  display: inline-block;
+  margin-top: 10px;
+}
+
+/* Input Field Styles */
+.sidebar input[type="text"],
+.sidebar input[type="number"],
+.sidebar select {
+  background-color: #ccc; /* Gray color matching the toggle switch when off */
+  color: #333;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  padding: 8px;
+  margin-top: 5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sidebar input[type="text"]::placeholder,
+.sidebar input[type="number"]::placeholder {
+  color: #666;
+}
+
+.sidebar input[type="text"]:focus,
+.sidebar input[type="number"]:focus,
+.sidebar select:focus {
+  outline: none;
+  border-color: #888;
+}
+
+/* Style for team wrapper to display defense and attack side by side */
+.team-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.team-wrapper .team-content {
+  flex: 1;
+}
+
+.team-wrapper .attack-recommendation {
+  flex: 1;
+  margin-left: 20px;
+}
+
+.attack-recommendation {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* Hide the arrow since the attack team is next to the defense team */
+.attack-recommendation .arrow-right {
+  display: none;
+}
+
+/* Style for the button */
+.add-to-attack-button {
+  background-color: #ccc;
+  color: #333;
+  border: none;
+  border-radius: 5px;
+  padding: 6px 12px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-to-attack-button:hover {
+  background-color: #bbb;
+}
+
+/* Style for team wrapper to display defense and attack side by side */
+.team-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.team-wrapper .team-content {
+  flex: 1;
+}
+
+.team-wrapper .attack-recommendation {
+  flex: 1;
+  margin-left: 20px;
+}
+
+.attack-recommendation {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* Hide the arrow since the attack team is next to the defense team */
+.attack-recommendation .arrow-right {
+  display: none;
+}
+
+/* Style for the button */
+.add-to-attack-button {
+  background-color: #ccc;
+  color: #333;
+  border: none;
+  border-radius: 5px;
+  padding: 6px 12px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-to-attack-button:hover {
+  background-color: #bbb;
+}
