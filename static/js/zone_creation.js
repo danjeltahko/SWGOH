@@ -53,8 +53,8 @@ export function createZone(zoneName, numTeams, isUserDefense) {
     teamDiv.classList.add("team");
 
     // Assign a unique identifier
-    // teamDiv.dataset.zoneName = zoneName;
-    // teamDiv.dataset.teamIndex = i; // Use i or a unique team ID if available
+    teamDiv.dataset.zoneName = zoneName;
+    teamDiv.dataset.teamIndex = i; // Use i or a unique team ID if available
 
     // Create team wrapper
     const teamWrapper = document.createElement("div");
@@ -155,8 +155,6 @@ export function addAttackTeam(characters = null) {
   const teamDiv = document.createElement("div");
   teamDiv.classList.add("team");
 
-  /* --------------- Maybe remove this -------------------*/
-
   // Team Header
   const teamHeader = document.createElement("div");
   teamHeader.classList.add("team-header");
@@ -167,8 +165,6 @@ export function addAttackTeam(characters = null) {
     attacksList.querySelectorAll(".attack-team").length + 1;
   label.textContent = `Attack Team ${attackTeamNumber}:`;
   teamHeader.appendChild(label);
-
-  /* --------------------------------------------------------*/
 
   // Add a delete button for the attack team
   const deleteButton = document.createElement("button");
@@ -219,29 +215,5 @@ export function addAttackTeam(characters = null) {
 
   teamDiv.appendChild(teamContent);
   attackDiv.appendChild(teamDiv);
-  attacksList.appendChild(attackDiv);
-}
-
-// Function to add an attack team
-function oldAttackTeam() {
-  const attacksList = document.getElementById("attacksList");
-
-  const attackDiv = document.createElement("div");
-  attackDiv.classList.add("attack-team");
-
-  // Create character slots
-  const teamDiv = document.createElement("div");
-  teamDiv.classList.add("team");
-  createTeamSlots(teamDiv, true); // Assuming user's characters
-
-  // Add a delete button for the attack team
-  const deleteButton = document.createElement("button");
-  deleteButton.textContent = "Delete";
-  deleteButton.onclick = function () {
-    attacksList.removeChild(attackDiv);
-  };
-
-  attackDiv.appendChild(teamDiv);
-  attackDiv.appendChild(deleteButton);
   attacksList.appendChild(attackDiv);
 }

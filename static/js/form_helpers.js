@@ -123,16 +123,18 @@ export function displayAttackRecommendations(attackRecommendations) {
         return;
       }
 
-      if (teamRecommendation && teamRecommendation.best_team) {
-        // Remove previous recommendation if any
-        const previousRecommendation = teamDiv.querySelector(
-          ".attack-recommendation",
-        );
-        if (previousRecommendation) {
-          previousRecommendation.remove();
-        }
+      // Remove previous recommendation if any
+      const previousRecommendation = teamDiv.querySelector(
+        ".attack-recommendation",
+      );
+      if (previousRecommendation) {
+        previousRecommendation.remove();
+      }
 
-        // Append attack recommendation next to team-wrapper
+      if (teamRecommendation && teamRecommendation.best_team) {
+        console.log("Defense team", teamRecommendation.defense[0].name);
+        console.log("Found a team", teamRecommendation.best_team);
+
         const attackDiv = document.createElement("div");
         attackDiv.classList.add("attack-recommendation");
 
@@ -160,11 +162,11 @@ export function displayAttackRecommendations(attackRecommendations) {
         attackContent.appendChild(charactersContainer);
         attackContent.appendChild(winRate);
 
-        // Add "Add to My Attacks" button
+        // Add "Add to Your Attack" button
         const addButton = document.createElement("button");
         addButton.type = "button";
-        addButton.textContent = "Add to My Attacks";
-        addButton.classList.add("add-attack-team-button");
+        addButton.textContent = "Add to Your Attack";
+        addButton.classList.add("add-to-attack-button");
         addButton.onclick = function () {
           addAttackTeam(teamRecommendation.best_team.attack);
         };

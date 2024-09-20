@@ -50,7 +50,7 @@ export function updateForm() {
   const userDefenseContainer = document.getElementById("userDefenseContainer");
   userDefenseContainer.innerHTML = "";
 
-  // Create Zones player
+  // Create Zones for player defense
   userDefenseContainer.appendChild(
     createZone("T1", window.zonesConfig.T1, true),
   );
@@ -60,9 +60,6 @@ export function updateForm() {
   userDefenseContainer.appendChild(
     createZone("B2", window.zonesConfig.B2, true),
   );
-
-  // Update user's defense teams
-  // createUserDefense();
 
   // Create "Your Attacks" section
   createYourAttacksSection();

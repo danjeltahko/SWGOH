@@ -7,7 +7,6 @@ import {
   submitForm,
 } from "./form_handling.js";
 import { savePresets, importPresets } from "./presets.js";
-import { initEventListeners } from "./character_selection.js";
 
 // Global Variables
 window.mode = "3v3"; // Default mode
