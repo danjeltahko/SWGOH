@@ -6,9 +6,6 @@ import json
 logger = Logger(format="simple")
 
 
-NOT_FOUND = []  # Global variable to store all not found characters
-
-
 def read_data(filename: str) -> dict:
     """
     Read the data from a JSON file
@@ -21,7 +18,7 @@ def read_data(filename: str) -> dict:
     return data
 
 
-def get_all_player_units(ally_code: str, max_gear_level=12) -> list:
+def get_all_player_units(ally_code: str, min_gear_level=12) -> list:
     """
     Get all player characters with greater or equal to max_gear_level
 
@@ -57,7 +54,7 @@ def get_all_player_units(ally_code: str, max_gear_level=12) -> list:
     for unit in player_data["units"]:
         unit_data = unit["data"]
         # Only add the characters with higher gear level than max_gear_level
-        if unit_data["gear_level"] >= max_gear_level:
+        if unit_data["gear_level"] >= min_gear_level:
             # Add the dictionary with the character data to the list
             player_characters.append(all_characters[unit_data["base_id"]])
 
@@ -119,14 +116,14 @@ def transform_data(
     match_threshold: int = 5,
 ) -> dict:
     """
-        Transform the data to use character IDs and add all the available counters for each opponent team.
+    Transform the data to use character IDs and add all the available counters for each opponent team.
 
-        :param data: Dictionary with the GAC round data
-        :param counters_data: Dictionary with the counters for each leader
-        :param player_characters: List with all available player characters
-        :param focus: List with the zones to focus on
-        :param match_threshold: The threshold for how similar the defense team should be to the counter team
-        :return: List with the transformed data
+    :param data: Dictionary with the GAC round data
+    :param counters_data: Dictionary with the counters for each leader
+    :param player_characters: List with all available player characters
+    :param focus: List with the zones to focus on
+    :param match_threshold: The threshold for how similar the defense team should be to the counter team
+    :return: List with the transformed data
 
     data = {
         "T1": [
@@ -170,11 +167,8 @@ def transform_data(
         ]
     }
 
-
     """
 
-    # Get all existing characters in the game
-    all_existing_characters = get_all_characters()
     # Divide the data into opponent and player data
     oppone_data = data["opponent"]
     player_data = data["player"]
@@ -195,11 +189,6 @@ def transform_data(
 
     """
 
-    # print(player_data)
-    # print("")
-    # print(oppone_data)
-    # print("")
-
     # Transform player defense to list of character IDs
     player_defense_characters_with_id = [
         character["base_id"]
@@ -207,7 +196,6 @@ def transform_data(
         for team in player_data[zone]
         for character in team["defense"]
     ]
-    logger.info("Successfully transformed player defense to character IDs")
 
     # Add the used attack to the player defense characters
     if used_attack != []:
@@ -230,7 +218,6 @@ def transform_data(
         for character in player_characters
         if character["base_id"] not in player_defense_characters_with_id
     ]
-    logger.info("Successfully removed player defense characters from player units")
 
     transformed_data = {}
     for zone in oppone_data:
@@ -393,39 +380,46 @@ def transform_solution(data: dict, solution: list) -> dict:
 
 def main(
     ally_code: str,
-    gac_season: str,
+    mode: str,
     gac_round: dict,
     min_gear_level: int,
     focus_zone: list[str],
+    debug: bool = False,
 ):
 
-    print("\n")
-    logger.debug("VALIDATION OF DATA:")
-    data = gac_round["opponent"]
-    for zone in data:
-        print(f"======= ZONE : {zone} =======")
-        for team in data[zone]:
-            defense = [character["base_id"] for character in team["defense"]]
-            print(f"Defense: {defense}")
+    if mode == "3v3":
+        gac_season = "Season_55"
+    elif mode == "5v5":
+        gac_season = "Season_56"
+    else:
+        raise ValueError("Invalid mode")
+
+    # Get the opponent data
+    data: dict = gac_round["opponent"]
+
+    # Print the data for validation
+    if debug:
+        print("\n")
+        logger.debug("VALIDATION OF OPPONENTS DEFENSE:")
+        data = gac_round["opponent"]
+        for zone in data:
+            print(f"======= ZONE : {zone} =======")
+            for team in data[zone]:
+                defense = [character["base_id"] for character in team["defense"]]
+                print(f"Defense: {defense}")
 
     # Get all ally_code players characters that
     # have gear level greater than min_gear_level
     player_characters = get_all_player_units(
-        ally_code=ally_code, max_gear_level=min_gear_level
+        ally_code=ally_code, min_gear_level=min_gear_level
     )
-    print("\n")
-    logger.info("Player characters has been fetched")
 
-    # 1. Read the seasons counter data from file
+    # Read the counter data from file
     counters = read_data(gac_season)
-    logger.info(f"Counter data for {gac_season} has been read")
 
-    # 2. Read the GAC round data from file
-    # gac_round = read_data(gac_round_input)
-
-    # 3. Transform the GAC round data to use character ID
+    # Transform the GAC round data to use character ID
     # and add all the available counters for each opponent team
-    data = transform_data(
+    data_to_calculate = transform_data(
         data=gac_round,
         counters_data=counters,
         player_characters=player_characters,
@@ -433,94 +427,41 @@ def main(
         focus=focus_zone,
     )
 
-    logger.info("GAC round data has been transformed\n")
+    # Print the transformed data for validation
+    if debug:
+        logger.debug("VALIDATION OF TRANSFORMED DATA:")
+        for zone in data_to_calculate:
+            print(f"======= ZONE : {zone} =======")
+            for team in data_to_calculate[zone]:
+                defense = [character["base_id"] for character in team["defense"]]
+                print(f"Defense: {defense}")
+                counters = [counter for counter in team["counters"]]
+                for counter in counters:
+                    counter_list = [
+                        character["base_id"] for character in counter["attack"]
+                    ]
+                    print(f"({counter['win_rate']}) Counter: {counter_list}")
 
-    logger.debug("VALIDATION OF TRANSFORMED DATA:")
-    for zone in data:
-        print(f"======= ZONE : {zone} =======")
-        for team in data[zone]:
-            defense = [character["base_id"] for character in team["defense"]]
-            print(f"Defense: {defense}")
-            counters = [counter for counter in team["counters"]]
-            for counter in counters:
-                counter_list = [character["base_id"] for character in counter["attack"]]
-                print(f"({counter['win_rate']}) Counter: {counter_list}")
-                break
+    # Calculate the best teams to use against the opponent teams
+    solution = calculate(data=data_to_calculate)
 
-    solution = calculate(data=data)
+    # Transform the solution to be added to the original opponent data
     transformed_solution = transform_solution(data=data, solution=solution)
 
-    print("\n")
-    logger.debug("VALIDATION OF SOLUTION DATA:")
-    for zone in transformed_solution:
-        print(f"======= ZONE : {zone} =======")
-        for team in transformed_solution[zone]:
-            defense = [character["base_id"] for character in team["defense"]]
-            best_counter = [
-                character["base_id"] for character in team["counters"][0]["attack"]
-            ]
-            counter_team = [
-                character["base_id"] for character in team["best_team"]["attack"]
-            ]
-
-            print(f"Defense: {defense}")
-            print(f"({team['counters'][0]['win_rate']}) Best counter: {best_counter}")
-            print(f"({team['best_team']['win_rate']}) Calc counter: {counter_team}")
-            print("\n")
-
-    """
-    Returns:
-
-    {
-        "T1": [
-            {
-                "defense": [
-                    {
-                        "name": name,
-                        "base_id": base_id,
-                        "categories": categories
-                        "image": image
-                    }
-                ],
-                "counters": [
-                    {
-                        "attack": [
-                            {
-                                "name": name,
-                                "base_id": base_id,
-                                "categories": categories
-                                "image": image
-                            }
-                        ],
-                        "win_rate": 100,
-                        "has_gl": True
-                    }
-                ],
-                "best_team": {
-                    "attack": [
-                        {
-                            "name": name,
-                            "base_id": base_id,
-                            "categories": categories
-                            "image": image
-                        }
-                    ],
-                    "win_rate": 100
-                }
-            }
-        ]
-    }
-    """
-
-    """
-    TODO:
-
-    Old ben lean with starkiller, showed Wampa as counter
-    but only because there wasn't many counters available.
-    , when reduced to 1, then correct counter with jedi revan showed.
-
-    Maybe add somewhere that if the win rate is low, then raise thershold
-    """
+    # Print the transformed solution for validation
+    if debug:
+        logger.debug("VALIDATION OF SOLUTION DATA:")
+        for zone in transformed_solution:
+            print(f"======= ZONE : {zone} =======")
+            for team in transformed_solution[zone]:
+                defense = [character["base_id"] for character in team["defense"]]
+                print(f"Defense: {defense}")
+                if defense and not team["eliminated"]:
+                    best_counter = [
+                        character["base_id"]
+                        for character in team["best_team"]["attack"]
+                    ]
+                    print(f"Counter: {best_counter}")
 
     return transformed_solution
 
@@ -528,7 +469,7 @@ def main(
 if __name__ == "__main__":
     main(
         ally_code="454-998-525",
-        gac_season="Season_55",
+        mode="3v3",
         gac_round={},
         min_gear_level=12,
         focus_zone=["B1", "B2"],

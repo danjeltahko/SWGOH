@@ -353,8 +353,6 @@ class CSP:
 
 def calculate(data: dict):
 
-    print("==== CALCULATING BEST ATTACK ====\n")
-
     # Creation of variables with index for each def team
     variables = []
     index = 0

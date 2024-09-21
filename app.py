@@ -2,10 +2,8 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-import json
 
 from GAC import calculate_attack_teams
-
 
 app = FastAPI()
 
@@ -21,60 +19,39 @@ async def get_form(request: Request):
     return templates.TemplateResponse("form.html", {"request": request})
 
 
-@app.post("/submit", response_class=HTMLResponse)
-async def submit_form(request: Request):
-    form_data = await request.form()
-    return templates.TemplateResponse(
-        "result.html", {"request": request, "data": form_data}
-    )
-
-
 @app.post("/calculate")
 async def calculate(request: Request):
 
+    # Get the JSON data from the request
     data = await request.json()
 
     # Extract data from the request
     ally_code = data.get("allyCode")  # str
-    min_gear = int(data.get("minGear"))  # str
-    mode = data.get("mode")
-    rank = data.get("rank")
-    user_defense = data.get("userDefense")
-    user_attack = data.get("userAttack")
-    opponent_defense = data.get("opponentDefense")
+    min_gear = int(data.get("minGear"))  # int
+    mode = data.get("mode")  # str
+    user_defense = data.get("userDefense")  # dict
+    user_attack = data.get("userAttack")  # dict
+    opponent_defense = data.get("opponentDefense")  # dict
 
+    # Create the GAC round object
     gac_round = {
         "opponent": opponent_defense,
         "player": user_defense,
         "used_attack": user_attack,
     }
-    """
-    Used attack is none
-    """
+
+    # At the moment dummy data
     focus_zone = ["T1", "B1", "B2"]
 
-    print(gac_round)
-
+    # Calculate the attack recommendations
     attack_recommendations = calculate_attack_teams(
         ally_code=ally_code,
-        gac_season="Season_55",
+        mode=mode,
         gac_round=gac_round,
         min_gear_level=int(min_gear),
         focus_zone=focus_zone,
+        debug=False,
     )
 
     # Return the recommendations as JSON
     return JSONResponse(content={"attackRecommendations": attack_recommendations})
-
-
-"""
-Ally code: 454-998-525
-
-My Defense:
-
-    TEAM 1: Jabba | Krrsantan | Boussh
-    TEAM 2: Qui-Gon | Anakin | Ki-Adi-Mundi
-    TEAM 3: Shaak Ti | Echo | ARC
-    TEAM 4: Hera | Kanan | Rex
-    TEAM 5: Finn | Finn | Poe
-"""

@@ -5,3 +5,4 @@ __pycache__
 venv/
 CONQUEST/
 GAC/data/
+endpoints.txt
