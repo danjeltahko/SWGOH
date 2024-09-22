@@ -1,6 +1,11 @@
 from bs4 import BeautifulSoup
 from endpoints import get_all_characters
-from utils import write_to_file
+from utils import (
+    write_to_file,
+    get_all_scraped_seasons,
+    get_3v3_seasons,
+    get_5v5_seasons,
+)
 from printinglog import Logger
 from tqdm import tqdm
 import requests
@@ -161,12 +166,24 @@ def run():
     # Base URL for the counter pages
     base_url = "https://swgoh.gg/gac/counters/"
 
-    scraped = [41, 42]
+    # Get the latest scraped season
+    oldest_season = max(get_all_scraped_seasons())
 
-    oldest_season = 43
-    newest_season = 57
+    # Get the latest season
+    soup = get_page(url="https://swgoh.gg/gac/counters/")
+    latest_season = max(
+        [
+            int(
+                season.find("div", {"class": "fw-bold text-muted mb-2 small"})
+                .get_text(strip=True)
+                .split(" ")[-1]
+            )
+            for season in soup.find_all("a", {"class": "paper d-block link-no-style"})
+        ]
+    )
 
-    for season in range(oldest_season, newest_season + 1):
+    # Scrape all seasons from the oldest to the latest
+    for season in range(oldest_season + 1, latest_season + 1):
 
         # Dictionary to store all counters
         gac_counters = {}
@@ -191,9 +208,16 @@ def run():
                 leader=character, url=counter_link
             )
 
-        season_name = f"Season_{season}"
+        # 4. Save the data to the correct folder
+        if (max(get_3v3_seasons()) + 1) == season:
+            location = f"3v3/Season_{season}.json"
+        elif (max(get_5v5_seasons()) + 1) == season:
+            location = f"5v5/Season_{season}.json"
+        else:
+            raise ValueError("GAC season is not 3v3 or 5v5")
+
         # Write the data to a file
-        write_to_file(gac_counters, f"{season_name}.json")
+        write_to_file(gac_counters, location)
 
 
 if __name__ == "__main__":

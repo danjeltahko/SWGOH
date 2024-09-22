@@ -1,5 +1,6 @@
 import os
 import json
+import re
 
 
 def write_to_file(data: dict, filename: str) -> None:
@@ -43,3 +44,57 @@ def read_data(filename: str) -> dict:
     with open(f"{path}/{filename}.json", "r") as f:
         data = json.load(f)
     return data
+
+
+def get_3v3_seasons() -> list:
+    """
+    Get all the scraped seasons from 3v3
+
+    Returns:
+    -------
+    seasons: list
+        List of scraped seasons
+    """
+    # Get the path to the data folder
+    path = os.path.join(os.getcwd(), "GAC/data/3v3")
+    # Get all the scraped seasons
+    seasons = [
+        int(re.search(r"\d+", f).group())
+        for f in os.listdir(path)
+        if f.endswith(".json")
+    ]
+    return seasons
+
+
+def get_5v5_seasons() -> list:
+    """
+    Get all the scraped seasons from 5v5
+
+    Returns:
+    -------
+    seasons: list
+        List of scraped seasons
+    """
+    # Get the path to the data folder
+    path = os.path.join(os.getcwd(), "GAC/data/5v5")
+    # Get all the scraped seasons
+    seasons = [
+        int(re.search(r"\d+", f).group())
+        for f in os.listdir(path)
+        if f.endswith(".json")
+    ]
+    return seasons
+
+
+def get_all_scraped_seasons() -> list:
+    """
+    Get all the scraped seasons
+
+    Returns:
+    -------
+    seasons: list
+        List of scraped seasons
+    """
+    # Get all the scraped seasons
+    seasons = get_3v3_seasons() + get_5v5_seasons()
+    return seasons
