@@ -1,21 +1,9 @@
 from .endpoints import get_all_characters, get_player_data
 from .csp import calculate
+from .utils import read_data
 from printinglog import Logger
-import json
 
 logger = Logger(format="simple")
-
-
-def read_data(filename: str) -> dict:
-    """
-    Read the data from a JSON file
-
-    :param filename: The name of the file to read
-    :return: The data from the file
-    """
-    with open(f"GAC/data/{filename}.json", "r") as f:
-        data = json.load(f)
-    return data
 
 
 def get_all_player_units(ally_code: str, min_gear_level=12) -> list:
@@ -387,13 +375,6 @@ def main(
     debug: bool = False,
 ):
 
-    if mode == "3v3":
-        gac_season = "Season_55"
-    elif mode == "5v5":
-        gac_season = "Season_56"
-    else:
-        raise ValueError("Invalid mode")
-
     # Get the opponent data
     data: dict = gac_round["opponent"]
 
@@ -414,8 +395,8 @@ def main(
         ally_code=ally_code, min_gear_level=min_gear_level
     )
 
-    # Read the counter data from file
-    counters = read_data(gac_season)
+    # Read the counter data from file | 3v3.json or 5v5.json
+    counters = read_data(mode)
 
     # Transform the GAC round data to use character ID
     # and add all the available counters for each opponent team

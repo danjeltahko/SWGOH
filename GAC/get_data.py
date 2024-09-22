@@ -1,37 +1,58 @@
 from bs4 import BeautifulSoup
 from endpoints import get_all_characters
+from utils import write_to_file
+from printinglog import Logger
 from tqdm import tqdm
-import json
 import requests
 import re
-import os
+from time import sleep
+
+logger = Logger(format="simple")
 
 
-# Get the page HTML as soup
 def get_page(url):
-    page = requests.get(url)
+    """
+    Get the url response as a soup object
+
+    Parameters:
+    ----------
+    url: str
+        URL to the page
+
+    Returns:
+    -------
+    soup: BeautifulSoup
+        Soup object of the page
+    """
+    try:
+        sleep(1)
+        page = requests.get(url)
+        page.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"Error: {e}")
+        raise
+
     soup = BeautifulSoup(page.content, "html.parser")
     return soup
 
 
-# Write the data to a file
-def write_to_file(data: dict, filename: str):
-    # Get the path to the data folder
-    path = os.path.join(os.getcwd(), "data")
-    # Write the data to a file
-    with open(f"{path}/{filename}", "w") as f:
-        json_data = json.dumps(data, indent=2)
-        # Write the data to the file
-        f.write(json_data)
-
-
-# TODO: Add all the pages available, now we only scrape the first page
 def get_all_counters_for_team(leader: str, url: str) -> list[dict[str, list[str]]]:
     """
-    Get all the counters from the given URL
+    Get all the counters from the given URL for the team(leader)
 
-    :param url: URL to the page with the counters
-    :return: List of dictionaries with the counters
+    Parameters:
+    ----------
+    leader: str
+        Leader of the team
+
+    url: str
+        URL to the page with the counters
+
+    Returns:
+    -------
+    counters: list[dict[str, list[str]]]
+        List of counters for the team(leader)
+
     """
 
     # Get the page HTML as soup
@@ -45,11 +66,13 @@ def get_all_counters_for_team(leader: str, url: str) -> list[dict[str, list[str]
 
         # Variables for each counter card
         a_team: list[str] = []  # Attack team
-        b_team: list[str] = [leader]  # Defense team
+        d_team: list[str] = [leader]  # Defense team
         win_rate = 0
+        avg_banners = 0.0
+        seen = 0
 
         # Gets all the characters in the counter card
-        # Each a tag has a url with the character name
+        # Each <a> tag has a url with the character name
         characters = counter.find_all("a")
         # Iterate through all the urls with the character names
         for character_ref in characters:
@@ -64,10 +87,11 @@ def get_all_counters_for_team(leader: str, url: str) -> list[dict[str, list[str]
             if member[0] == "a":
                 a_team.append(name)
             elif member[0] == "d":
-                b_team.append(name)
+                d_team.append(name)
 
         # Get the win rate and win history data of the counter
         data = counter.find_all("div", {"class": "flex-1"})
+
         # Iterate through each div in the data
         for d in data:
             # Strip the line of all whitespace
@@ -76,48 +100,100 @@ def get_all_counters_for_team(leader: str, url: str) -> list[dict[str, list[str]
             if line.startswith("Win"):
                 # Remove all non-digits from the line, eg. %99% -> 99
                 win_rate = int(re.sub(r"\D", "", line))
+            # If the line starts with "Avg" it is the average banners
+            elif line.startswith("Avg"):
+                # Remove the "Avg" from the line, eg. Avg 50 -> 50
+                avg_banners = float(line.strip("Avg"))
+            # If the line starts with "Seen" it is the value of times counter been seen
+            elif line.startswith("Seen"):
+                seen_raw = line.strip("Seen")
+                # First line will be the complete string, add last time
+                if not "Win" in seen_raw:
+                    # eg. 1,327 -> 1327
+                    seen_raw = seen_raw.replace(",", "")
+                    # eg. 11.3K -> 11300
+                    seen_raw = seen_raw.replace(".", "")
+                    seen_raw = seen_raw.replace("K", "00")
+                    # Save the value as an integer
+                    seen = int(seen_raw)
 
         # Append the counter to the list of counters
         counters.append(
             {
                 "attack": a_team,
-                "defense": b_team,
+                "defense": d_team,
                 "win_rate": win_rate,
+                "avg_banners": avg_banners,
+                "seen": seen,
             }
         )
+
+    # If there is a next page, get the counters from the next page
+    pagination = soup.find_all("a", {"class": "pagination__link"})
+    if pagination:
+        next = pagination[-1].get_text(strip=True)
+        if next == "Next":
+            # Get the next page URL
+            next_page = "https://swgoh.gg/" + pagination[-1].get("href")
+            # Get all counters from the next page
+            counters += get_all_counters_for_team(leader, next_page)
 
     return counters
 
 
 def run():
+    """
+    Each counter in gac_counters contains the following data:
 
-    # Dictionary to store all counters
-    gac_counters = {}
+    {
+        "CHARACTER_ID": [
+            {
+                "attack": [CHARACTER_ID, ...],
+                "defense": [CHARACTER_ID, ...],
+                "win_rate": int(win_rate),
+                "avg_banners": float(avg_banners),
+                "seen": int(seen),
+            }
+        ]
+    }
+    """
 
     # Base URL for the counter pages
     base_url = "https://swgoh.gg/gac/counters/"
 
-    # 1. Get latest GAC SEASON url.
-    # TODO: Get the latest GAC season ID
-    season_id = "CHAMPIONSHIPS_GRAND_ARENA_GA2_EVENT_SEASON_55"
+    scraped = [41, 42]
 
-    # 2. Get all available characters from the API
-    all_characters = get_all_characters()
+    oldest_season = 43
+    newest_season = 57
 
-    # 3. Get all counters for each team(leader).
-    for character_data in tqdm(all_characters, desc="Scraping GAC.. ", colour="green"):
-        # Get the base ID of the character
-        character = character_data["base_id"]
-        # Create the URL for the counter
-        counter_link = f"{base_url}{character}/?season_id={season_id}"
-        # Get all counters for the team(leader)
-        gac_counters[character] = get_all_counters_for_team(
-            leader=character, url=counter_link
-        )
+    for season in range(oldest_season, newest_season + 1):
 
-    season_name = "Season_55"
-    # Write the data to a file
-    write_to_file(gac_counters, f"{season_name}.json")
+        # Dictionary to store all counters
+        gac_counters = {}
+
+        # 1. Set the latest GAC SEASON url.
+        season_id = f"CHAMPIONSHIPS_GRAND_ARENA_GA2_EVENT_SEASON_{season}"
+
+        # 2. Get all available characters from the API
+        all_characters = get_all_characters()
+
+        # 3. Get all counters for each team(leader).
+        for character_data in tqdm(
+            all_characters, desc=f"Scraping GAC Season {season} >", colour="green"
+        ):
+            # Get the base ID of the character
+            character = character_data["base_id"]
+            # Create the URL for the counter
+            counter_link = f"{base_url}{character}/?season_id={season_id}"
+            # URL: https://swgoh.gg/gac/counters/DARTHTRAYA/?season_id=CHAMPIONSHIPS_GRAND_ARENA_GA2_EVENT_SEASON_
+            # Get all counters for the team(leader)
+            gac_counters[character] = get_all_counters_for_team(
+                leader=character, url=counter_link
+            )
+
+        season_name = f"Season_{season}"
+        # Write the data to a file
+        write_to_file(gac_counters, f"{season_name}.json")
 
 
 if __name__ == "__main__":
