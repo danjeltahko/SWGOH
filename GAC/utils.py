@@ -1,6 +1,8 @@
 import os
 import json
 import re
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 
 
 def write_to_file(data: dict, filename: str) -> None:
@@ -98,3 +100,25 @@ def get_all_scraped_seasons() -> list:
     # Get all the scraped seasons
     seasons = get_3v3_seasons() + get_5v5_seasons()
     return seasons
+
+
+def get_season_date(season: int) -> tuple[date, date]:
+    """
+    Get the date of the season
+
+    Parameters:
+    ----------
+    season: int
+        The season number
+
+    Returns:
+    -------
+    new_date: tuple[date, date]
+        The start and end date of the season
+    """
+    # Each GAC season is every 28 days
+    # The first one scraped was season 41 on June 20, 2023
+    base_date = (41, date(2023, 6, 20))
+    start_date = base_date[1] + relativedelta(days=28 * (season - base_date[0]))
+    end_date = start_date + relativedelta(days=21)
+    return start_date, end_date

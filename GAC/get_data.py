@@ -182,6 +182,9 @@ def run():
         ]
     )
 
+    if oldest_season == latest_season:
+        logger.info("No new seasons to scrape")
+
     # Scrape all seasons from the oldest to the latest
     for season in range(oldest_season + 1, latest_season + 1):
 
@@ -196,7 +199,7 @@ def run():
 
         # 3. Get all counters for each team(leader).
         for character_data in tqdm(
-            all_characters, desc=f"Scraping GAC Season {season} >", colour="green"
+            all_characters, desc=f"Scraping GAC Season {season} ", colour="green"
         ):
             # Get the base ID of the character
             character = character_data["base_id"]
@@ -210,9 +213,9 @@ def run():
 
         # 4. Save the data to the correct folder
         if (max(get_3v3_seasons()) + 1) == season:
-            location = f"3v3/Season_{season}.json"
-        elif (max(get_5v5_seasons()) + 1) == season:
             location = f"5v5/Season_{season}.json"
+        elif (max(get_5v5_seasons()) + 1) == season:
+            location = f"3v3/Season_{season}.json"
         else:
             raise ValueError("GAC season is not 3v3 or 5v5")
 

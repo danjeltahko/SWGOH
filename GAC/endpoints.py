@@ -112,5 +112,23 @@ def get_player_data(ally_code: str) -> dict:
     return data
 
 
+def get_datacron_sets():
+    response = requests.get(url=BASE_URL + "datacron-sets")
+    data = response.json()
+    return data
+
+
+def get_datacron_templates():
+    response = requests.get(url=BASE_URL + "datacron-templates")
+    data = response.json()
+    return data
+
+
+def get_datacron_affix_template_sets():
+    response = requests.get(url=BASE_URL + "datacron-affix-template-sets")
+    data = response.json()
+    return data
+
+
 if __name__ == "__main__":
-    get_all_abilities()
+    datacrons = get_datacron_sets()
