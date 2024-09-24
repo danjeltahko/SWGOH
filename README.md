@@ -24,11 +24,11 @@ fastapi dev app.py
 - [ ] Maybe even add a threshold for some teams, so it will pick other teams.
 
 ### Main Program
-- [ ] Add so depending on MODE, will get the corresponding data with counters.
+- [X] Add so depending on MODE, will get the corresponding data with counters.
 
 ### Scraping
-- [ ] Scrape all the pages for counters.
-- [ ] Calculate the the most seen counters, and base the win rate based on that.
+- [X] Scrape all the pages for counters.
+- [X] Calculate the most seen counters, and base the win rate based on that.
 
 ### Automation
 - [ ] Checking new characters every day, deploy webapp with ned characters if found
